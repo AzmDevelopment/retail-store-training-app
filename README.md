@@ -1,18 +1,15 @@
-# AWS Containers Retail Sample
+# Retail sample app
 
-This is a sample application designed to illustrate various concepts related to containers on AWS. It presents a sample retail store application including a product catalog, shopping cart and checkout.
+This is a sample application designed to illustrate various concepts related to containers. It presents a sample retail store application including a product catalog, shopping cart and checkout.
 
 It provides:
 
 - A distributed component architecture in various languages and frameworks
 - Utilization of a variety of different persistence backends for different components like MariaDB (or MySQL), DynamoDB and Redis
 - The ability to run in various container orchestration technologies like Docker Compose, Kubernetes etc.
-- Pre-built container images for both x86-64 and ARM64 CPU architectures
 - All components instrumented for Prometheus metrics and OpenTelemetry OTLP tracing
 - Support for Istio on Kubernetes
 - Load generator which exercises all of the infrastructure
-
-**This project is intended for educational purposes only and not for production use.**
 
 ![Screenshot](/docs/images/screenshot.png)
 
@@ -24,55 +21,16 @@ The application has been deliberately over-engineered to generate multiple de-co
 
 | Component                                                                                                                   | Language | Container Image                                                             | Description                                                                 |
 | --------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| ![ui workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-ui.yml/badge.svg)             | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-ui)       | Aggregates API calls to the various other services and renders the HTML UI. |
-| ![catalog workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-catalog.yml/badge.svg)   | Go       | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-catalog)  | Product catalog API                                                         |
-| ![cart workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-cart.yml/badge.svg)         | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-cart)     | User shopping carts API                                                     |
-| ![orders workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-orders.yml/badge.svg)     | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-orders)   | User orders API                                                             |
-| ![checkout workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-checkout.yml/badge.svg) | Node     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-checkout) | API to orchestrate the checkout process                                     |
-| ![assets workflow](https://github.com/aws-containers/retail-store-sample-app/actions/workflows/ci-assets.yml/badge.svg)     | Nginx    | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-assets)   | Serves static assets like images related to the product catalog             |
+| UI | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-ui)       | Aggregates API calls to the various other services and renders the HTML UI. |
+| Catalog   | Go       | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-catalog)  | Product catalog API                                                         |
+| Cart         | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-cart)     | User shopping carts API                                                     |
+| Orders     | Java     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-orders)   | User orders API                                                             |
+| Checkout | Node     | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-checkout) | API to orchestrate the checkout process                                     |
+| Assets     | Nginx    | [Link](https://gallery.ecr.aws/aws-containers/retail-store-sample-assets)   | Serves static assets like images related to the product catalog             |
 
 ## Quickstart
 
 The following sections provide quickstart instructions for various platforms. All of these assume that you have cloned this repository locally and are using a CLI thats current directory is the root of the code repository.
-
-### Terraform
-
-The following options are available to deploy the application using Terraform:
-
-| Name                                                    | Description                                                                                                     |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [Amazon EKS](./deploy/terraform/eks/default/)           | Deploys the application to Amazon EKS using other AWS services for dependencies, such as RDS, DynamoDB etc.     |
-| [Amazon EKS (Minimal)](./deploy/terraform/eks/minimal/) | Deploys the application to Amazon EKS using in-cluster dependencies instead of RDS, DynamoDB etc.               |
-| [Amazon ECS](./deploy/terraform/ecs/default/)           | Deploys the application to Amazon ECS using other AWS services for dependencies, such as RDS, DynamoDB etc.     |
-| [AWS App Runner](./deploy/terraform/apprunner/)         | Deploys the application to AWS App Runner using other AWS services for dependencies, such as RDS, DynamoDB etc. |
-
-### Kubernetes
-
-This deployment method will run the application in an existing Kubernetes cluster.
-
-Pre-requisites:
-
-- Kubernetes cluster
-- `kubectl` installed locally
-
-Use `kubectl` to run the application:
-
-```
-kubectl apply -f https://raw.githubusercontent.com/aws-containers/retail-store-sample-app/main/dist/kubernetes/deploy.yaml
-kubectl wait --for=condition=available deployments --all
-```
-
-Get the URL for the frontend load balancer like so:
-
-```
-kubectl get svc ui
-```
-
-To remove the application use `kubectl` again:
-
-```
-kubectl delete -f https://raw.githubusercontent.com/aws-containers/retail-store-sample-app/main/dist/kubernetes/deploy.yaml
-```
 
 ### Docker Compose
 
@@ -81,18 +39,6 @@ This deployment method will run the application on your local machine using `doc
 Pre-requisites:
 
 - Docker installed locally
-
-Change directory to the Docker Compose deploy directory:
-
-```
-cd dist/docker-compose
-```
-
-Log in to the public ECR registry by following the instructions on the [AWS ECR documentation](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registry-auth.html#public-registry-auth-token):
-
-```
-aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-```
 
 Use `docker compose` to run the application containers:
 
@@ -112,40 +58,18 @@ To stop the containers in `docker compose` use Ctrl+C. To delete all the contain
 docker compose -f docker-compose.yml down
 ```
 
-## Security
+## Project
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+This is a microservice application and most dockerfiles have been already provided to you. As always fork this repo and create git branches as necessary. Do not push to main.
 
-## License
-
-This project is licensed under the MIT-0 License.
-
-This package depends on and may incorporate or retrieve a number of third-party
-software packages (such as open source packages) at install-time or build-time
-or run-time ("External Dependencies"). The External Dependencies are subject to
-license terms that you must accept in order to use this package. If you do not
-accept all of the applicable license terms, you should not use this package. We
-recommend that you consult your company’s open source approval policy before
-proceeding.
-
-Provided below is a list of External Dependencies and the applicable license
-identification as indicated by the documentation associated with the External
-Dependencies as of Amazon's most recent review.
-
-THIS INFORMATION IS PROVIDED FOR CONVENIENCE ONLY. AMAZON DOES NOT PROMISE THAT
-THE LIST OR THE APPLICABLE TERMS AND CONDITIONS ARE COMPLETE, ACCURATE, OR
-UP-TO-DATE, AND AMAZON WILL HAVE NO LIABILITY FOR ANY INACCURACIES. YOU SHOULD
-CONSULT THE DOWNLOAD SITES FOR THE EXTERNAL DEPENDENCIES FOR THE MOST COMPLETE
-AND UP-TO-DATE LICENSING INFORMATION.
-
-YOUR USE OF THE EXTERNAL DEPENDENCIES IS AT YOUR SOLE RISK. IN NO EVENT WILL
-AMAZON BE LIABLE FOR ANY DAMAGES, INCLUDING WITHOUT LIMITATION ANY DIRECT,
-INDIRECT, CONSEQUENTIAL, SPECIAL, INCIDENTAL, OR PUNITIVE DAMAGES (INCLUDING
-FOR ANY LOSS OF GOODWILL, BUSINESS INTERRUPTION, LOST PROFITS OR DATA, OR
-COMPUTER FAILURE OR MALFUNCTION) ARISING FROM OR RELATING TO THE EXTERNAL
-DEPENDENCIES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, EVEN
-IF AMAZON HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THESE LIMITATIONS
-AND DISCLAIMERS APPLY EXCEPT TO THE EXTENT PROHIBITED BY APPLICABLE LAW.
-
-MariaDB Community License - [LICENSE](https://mariadb.com/kb/en/mariadb-licenses/)
-MySQL Community Edition - [LICENSE](https://github.com/mysql/mysql-server/blob/8.0/LICENSE)
+### Tasks
+- Containerization
+    - Create Dockerfile for checkout service.
+    - Create Dockerfile for catalog service.
+    - Create Dockerfile for assets service.
+    - Replace all image fields in docker-compose.yml with build fields with appropriate context and dockerfile. The goal is so that compose is no longer pulling images from ECR but building all of them locally.
+- Create CI pipelines on github actions.
+    - When there is a push to main branch for a service, you have to build it's docker image and push to your dockerhub.
+    - Do the same when there is a pull request with main as the base branch and changes is a specific service.
+- Create kubernetes manifests and deploy complete application in minikube.
+- Package the application using helm chart.
